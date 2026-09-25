@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Lifting"><meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0a6b57">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>Lifting Tracker</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;600&display=swap">
+<style>html{padding-top:env(safe-area-inset-top,0px)}body{margin:0}
+:root{--bg:#f3f5f2;--surface:#fff;--ink:#1a2220;--muted:#5d6864;--line:#d6dcd8;--accent:#0a6b57;--on-accent:#fff;--soft:#e4ede8;
+--c-core:#c9971a;--c-power:#d64545;--c-squat:#2f6fd0;--c-hinge:#8452c8;--c-push:#e07a1f;--c-pull:#2b9a5f;--c-lunge:#93623a;--c-single:#1899b0;--c-cond:#e0503a;--c-misc:#6b7772}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111614;--surface:#1a211f;--ink:#e9eeea;--muted:#9aa7a0;--line:#2e3935;--accent:#4fc4a5;--on-accent:#0b1512;--soft:#232d29;
+--c-core:#e3b53f;--c-power:#ee6b6b;--c-squat:#6b9df0;--c-hinge:#a884e6;--c-push:#f0994a;--c-pull:#4fc487;--c-lunge:#c99568;--c-single:#4cc3d8;--c-cond:#f2765f;--c-misc:#95a39d;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#111614;--surface:#1a211f;--ink:#e9eeea;--muted:#9aa7a0;--line:#2e3935;--accent:#4fc4a5;--on-accent:#0b1512;--soft:#232d29;
+--c-core:#e3b53f;--c-power:#ee6b6b;--c-squat:#6b9df0;--c-hinge:#a884e6;--c-push:#f0994a;--c-pull:#4fc487;--c-lunge:#c99568;--c-single:#4cc3d8;--c-cond:#f2765f;--c-misc:#95a39d;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans",system-ui,sans-serif;font-size:15px;line-height:1.45;padding-inline:14px;padding-block:14px 120px}
+.wrap{max-width:640px;margin:0 auto}
+h1,h2,h3,.cond{font-family:"Barlow Condensed","Arial Narrow",sans-serif}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:10px}
+h1{font-size:1.9rem;line-height:1;margin:0;font-weight:700}
+.total{font-size:13px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+.total b{display:block;font-size:1.5rem;font-family:"Barlow Condensed",sans-serif;color:var(--ink)}
+.bar{height:6px;background:var(--soft);border-radius:3px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent)}
+.next{background:var(--accent);color:var(--on-accent);border-radius:8px;padding:12px 14px;margin:12px 0;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.next small{display:block;opacity:.85;font-size:12px}
+.next b{font-family:"Barlow Condensed",sans-serif;font-size:1.25rem;font-weight:700}
+.btn{border:0;border-radius:6px;padding:9px 14px;font:600 14px "IBM Plex Sans",sans-serif;cursor:pointer;background:var(--on-accent);color:var(--accent)}
+.btn.line{background:transparent;border:1px solid var(--line);color:var(--ink)}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.tab{flex:1 0 auto;min-width:78px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:8px 10px;text-align:left;cursor:pointer}
+.tab .cond{font-size:1.15rem;font-weight:700;display:block;line-height:1.1}
+.tab small{color:var(--muted);font-size:11.5px;font-variant-numeric:tabular-nums}
+.tab[aria-selected=true]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:var(--soft)}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.seg button{font:700 1.3rem "Barlow Condensed",sans-serif;padding:10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.sess{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:12px}
+.sess button{padding:8px 0;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 14px "IBM Plex Sans",sans-serif;cursor:pointer;font-variant-numeric:tabular-nums}
+.sess button[aria-pressed=true]{border-color:var(--accent);box-shadow:inset 0 0 0 2px var(--accent)}
+.sess button.done{background:var(--soft);color:var(--accent)}
+.sess button.done::after{content:" ✓"}
+.lbl{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:2px 0 4px}
+.info{color:var(--muted);font-size:13.5px;margin:0 0 6px}
+.sec{font:700 .95rem "Barlow Condensed",sans-serif;letter-spacing:.14em;text-transform:uppercase;margin:18px 0 6px;color:var(--muted)}
+.card{position:relative;background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--cc,var(--c-misc));border-radius:8px;padding:10px 12px;margin-bottom:8px}
+.card.done{opacity:.6}
+.card.done .nm{text-decoration:line-through}
+.row{display:flex;gap:10px;align-items:flex-start}
+.chk{flex:0 0 auto;width:34px;height:34px;border-radius:8px;border:2px solid var(--cc,var(--c-misc));background:transparent;color:var(--on-accent);font-size:20px;line-height:1;cursor:pointer;display:grid;place-items:center;padding:0}
+.chk[aria-checked=true]{background:var(--cc,var(--c-misc))}
+.chk[aria-checked=true]::after{content:"✓";font-weight:700}
+.tag{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--cc,var(--c-misc));font-weight:600}
+.nm{font-weight:600;font-size:16px;margin:1px 0}
+.det{color:var(--muted);font-size:13.5px}
+.log{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;align-items:center}
+.log label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:5px}
+.log input{width:72px;padding:7px 8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font:16px "IBM Plex Sans",sans-serif;font-variant-numeric:tabular-nums}
+.last{font-size:12px;color:var(--muted)}
+details{margin-top:6px}
+summary{font-size:12.5px;color:var(--accent);cursor:pointer;padding:4px 0}
+details p{font-size:13px;margin:4px 0;color:var(--muted)}
+details input.nmin{width:100%;padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font:16px "IBM Plex Sans",sans-serif;margin-top:4px}
+ol.ramp{margin:6px 0;padding-left:20px;font-size:13.5px;color:var(--muted)}
+.timer{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;z-index:10}
+.timer .t{font:700 1.7rem "Barlow Condensed",sans-serif;min-width:64px;text-align:center;font-variant-numeric:tabular-nums}
+.timer .t.end{color:var(--c-power)}
+.timer button{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:6px;padding:8px 9px;font:600 13px "IBM Plex Sans",sans-serif;cursor:pointer}
+.foot{margin-top:18px;display:flex;gap:8px;flex-wrap:wrap}
+.foot small{color:var(--muted);width:100%}
+</style></head><body>
+<div class="wrap"><div id="app"></div></div>
+<div class="timer" id="timer"><span class="t" id="tt">0:00</span><button data-sec="30">30 s</button><button data-sec="45">45 s</button><button data-sec="60">60 s</button><button data-sec="90">90 s</button><button data-stop="1">Stop</button></div>
+<script>
+var D={"programs": [{"name": "Basic Training I", "sub": "2 × 15 reps, 1–2 sets. Learn the movements, build the base. Book note: if 15 reps feels easy, the weight is too light.", "A": [{"sec": "Core"}, {"slot": "Stability", "ex": "Plank with reduced base of support (Level 2)", "reps": "1–2 × 30 s", "notes": "Reach 60 s → go up a level"}, {"slot": "Dynamic stability", "ex": "Push-away (Level 2)", "reps": "1–2 × 10", "notes": "Rest 45 s between sets"}, {"sec": "Power"}, {"slot": "Power", "ex": "Box jump (Level 1)", "reps": "2 × 5", "notes": "Rest 60 s. Step down, don't jump down"}, {"sec": "Strength"}, {"slot": "1a Squat", "ex": "Goblet squat (Level 2)", "reps": "1–2 × 15", "notes": "Rest 30 s"}, {"slot": "1b Pull", "ex": "Kneeling lat pulldown (Level 2)", "reps": "1–2 × 15", "notes": "Alternate 1a / 1b"}, {"slot": "2a Single-leg stance", "ex": "Step-up (Level 1)", "reps": "1–2 × 15", "notes": "Each side"}, {"slot": "2b Push", "ex": "Push-up (Level 1)", "reps": "1–2 × 15", "notes": "Can't do 15? Hands on a bench"}, {"sec": "Intervals"}, {"slot": "Intervals", "ex": "Rowing machine or Airdyne bike (low impact). Go hard for the work minute.", "reps": "2–4 × 1 min work / 2 min recovery", "notes": "Alternatives: jump rope, kettlebell swings"}], "B": [{"sec": "Core"}, {"slot": "Stability", "ex": "Side plank (Level 1)", "reps": "1–2 × 30 s", "notes": "Each side"}, {"slot": "Dynamic stability", "ex": "Plank and pulldown (Level 1)", "reps": "2 × 10", "notes": "Each side"}, {"sec": "Combination"}, {"slot": "Combination", "ex": "Reverse lunge and shoulder press (Level 1)", "reps": "2 × 5–8", "notes": "Each side"}, {"sec": "Strength"}, {"slot": "1a Hinge", "ex": "Romanian deadlift (Level 2)", "reps": "1–2 × 15", "notes": "Rest 30 s"}, {"slot": "1b Push", "ex": "Standing single-arm cable chest press (Level 2)", "reps": "1–2 × 15", "notes": "Each side"}, {"slot": "2a Lunge", "ex": "Reverse lunge (Level 2)", "reps": "1–2 × 15", "notes": "Each side, rest 45–60 s"}, {"slot": "2b Pull", "ex": "Dumbbell two-point row (Level 3)", "reps": "1–2 × 15", "notes": "Each side"}, {"sec": "Intervals"}, {"slot": "Intervals", "ex": "Rowing machine or Airdyne bike (low impact). Go hard for the work minute.", "reps": "2–4 × 1 min work / 2 min recovery", "notes": "Same as Workout A"}]}, {"name": "Basic Training II", "sub": "Sets of 10, 2–4 sets. Heavier loads, more stability work, power and combination exercises.", "A": [{"sec": "Core"}, {"slot": "Stability", "ex": "Tall kneeling cable static hold (anti-rotation)", "reps": "2 × 30 s", "notes": "Each side"}, {"sec": "Combination"}, {"slot": "Combination", "ex": "Romanian deadlift and row (Level 2)", "reps": "2 × 10", "notes": "Rest 60 s"}, {"sec": "Strength"}, {"slot": "1a Lunge", "ex": "Side lunge (Level 2.5)", "reps": "2–4 × 10", "notes": "Each side"}, {"slot": "1b Pull", "ex": "Dumbbell three-point row (Level 3)", "reps": "2–4 × 10", "notes": "Each side, rest 60 s"}, {"slot": "2a Hinge", "ex": "Rack deadlift (Level 3)", "reps": "2–4 × 10", "notes": "Rest 60 s"}, {"slot": "2b Push", "ex": "Push-up with hands suspended (Level 2.5)", "reps": "2–4 × 10", "notes": "TRX or rings. Fallback: standard push-up"}, {"sec": "Intervals"}, {"slot": "Intervals", "ex": "Kettlebell swings", "reps": "3–6 × 30 s work / 60 s recovery", "notes": "Or jump rope, battling ropes"}], "B": [{"sec": "Core"}, {"slot": "Dynamic stability", "ex": "Swiss-ball rollout (Level 3)", "reps": "2 × 10", "notes": "Rest 45 s"}, {"sec": "Power"}, {"slot": "Power", "ex": "Jump squat (Level 2)", "reps": "2 × 5–8", "notes": "Rest 60 s. Land softly"}, {"sec": "Strength"}, {"slot": "1a Single-leg stance", "ex": "Offset-loaded step-up (Level 2)", "reps": "2–4 × 10", "notes": "Each side"}, {"slot": "1b Push", "ex": "Dumbbell bench press (Level 4)", "reps": "2–4 × 10", "notes": "Rest 60 s"}, {"slot": "2a Squat", "ex": "Kettlebell rack-position squat (Level 2.5)", "reps": "2–4 × 10", "notes": "Rest 60 s"}, {"slot": "2b Pull", "ex": "Single-arm half-kneeling lat pulldown", "reps": "2–4 × 10", "notes": "Each side"}, {"sec": "Intervals"}, {"slot": "Intervals", "ex": "Battling ropes or rowing machine sprints", "reps": "3–6 × 30 s work / 60 s recovery", "notes": "Same as Workout A"}]}, {"name": "Basic Training III", "sub": "Sets of 12, three exercises back to back (1a-1b-1c). The most demanding fat-loss block.", "A": [{"sec": "Core"}, {"slot": "Dynamic stability", "ex": "Mountain climber (Level 3)", "reps": "2–3 × 10", "notes": "Each side"}, {"sec": "Power"}, {"slot": "Power", "ex": "Kettlebell swing (Level 3)", "reps": "2 × 5–8", "notes": "Rest 60 s. No kettlebell: jump squat"}, {"sec": "Strength"}, {"slot": "1a Hinge", "ex": "Cable pull-through (Level 2 alt.)", "reps": "2–3 × 12", "notes": "1a → 1b → 1c, rest 60 s after 1c"}, {"slot": "1b Push", "ex": "T push-up (Level 3)", "reps": "2–3 × 12", "notes": "Each side"}, {"slot": "1c Lunge", "ex": "Split squat, rear foot elevated (Level 3)", "reps": "2–3 × 12", "notes": "Each side"}, {"slot": "2a Pull", "ex": "Inverted row (Level 4)", "reps": "2–3 × 12", "notes": "Feet lower = easier"}, {"slot": "2b Combination", "ex": "Squat and press (Level 3)", "reps": "2–3 × 12", "notes": "Rest 30–45 s"}, {"sec": "Intervals"}, {"slot": "Intervals", "ex": "Farmer's walk or bear-hug walk", "reps": "4–6 × 30 s work / 30 s recovery", "notes": "Or sled push"}], "B": [{"sec": "Core"}, {"slot": "Dynamic stability", "ex": "Cable tall kneeling chop", "reps": "2–3 × 10", "notes": "Each side"}, {"sec": "Power"}, {"slot": "Power", "ex": "Explosive push-up", "reps": "2 × 5–8", "notes": "Hands on a bench if needed"}, {"sec": "Strength"}, {"slot": "1a Squat", "ex": "Front squat (Level 3)", "reps": "2–3 × 12", "notes": "1a → 1b → 1c, rest 60 s after 1c"}, {"slot": "1b Pull", "ex": "Kneeling lat pulldown (Level 2)", "reps": "2–3 × 12", "notes": "Heavier than in BT I"}, {"slot": "1c Single-leg stance", "ex": "Single-leg Romanian deadlift (Level 3)", "reps": "2–3 × 12", "notes": "Each side"}, {"slot": "2a Push", "ex": "Dumbbell shoulder press (Level 5)", "reps": "2–3 × 12", "notes": "Rest 45 s"}, {"slot": "2b Combination", "ex": "Push-up and one-arm row (Level 4)", "reps": "2–3 × 12", "notes": "Each side"}, {"sec": "Intervals"}, {"slot": "Intervals", "ex": "Jump rope, rowing machine or battling ropes", "reps": "4–6 × 30 s work / 30 s recovery", "notes": "Same as Workout A"}]}, {"name": "Basic Training IV", "sub": "Sets of 10, 3–4 sets, then a new metabolic finisher: four exercises for 15–20 seconds each, no rest.", "A": [{"sec": "Core"}, {"slot": "Dynamic stability", "ex": "Suspended fallout (Level 4)", "reps": "2 × 10", "notes": "Too hard? Swiss-ball rollout"}, {"sec": "Combination"}, {"slot": "Combination", "ex": "Squat and press", "reps": "2 × 8–10", "notes": "Rest 60 s"}, {"sec": "Strength"}, {"slot": "1a Hinge", "ex": "Deadlift (Level 4)", "reps": "3–4 × 10", "notes": "Form breaks? Rack deadlift"}, {"slot": "1b Push", "ex": "Dumbbell single-arm bench press (Level 4.1)", "reps": "3–4 × 10", "notes": "Each side"}, {"slot": "2a Single-leg stance", "ex": "Crossover step-up (Level 2.25)", "reps": "3–4 × 10", "notes": "Each side"}, {"slot": "2b Pull", "ex": "Suspended row (Level 4.5)", "reps": "3–4 × 10", "notes": "Rest 60 s"}, {"sec": "Metabolic (no rest between the 4 exercises)"}, {"slot": "3a Hinge", "ex": "Romanian deadlift, light", "reps": "1–2 × 15–20 s", "notes": "Time, not reps"}, {"slot": "3b Push", "ex": "Push-up (or hands elevated)", "reps": "1–2 × 15–20 s", "notes": "Rest ~90 s after 3d"}, {"slot": "3c Locomotion", "ex": "Farmer's walk", "reps": "1–2 × 15–20 s", "notes": "Any loaded carry"}, {"slot": "3d Pull", "ex": "Standing cable row", "reps": "1–2 × 15–20 s", "notes": ""}], "B": [{"sec": "Core"}, {"slot": "Stability", "ex": "Side plank variations", "reps": "2 × 30 s", "notes": "Each side"}, {"sec": "Combination"}, {"slot": "Combination", "ex": "Romanian deadlift and row", "reps": "2 × 8–10", "notes": "Rest 60 s"}, {"sec": "Strength"}, {"slot": "1a Squat", "ex": "Back squat (Level 4)", "reps": "3–4 × 10", "notes": "Prefer front squat if back squat bothers you"}, {"slot": "1b Pull", "ex": "Dumbbell three-point row (Level 3)", "reps": "3–4 × 10", "notes": "Each side"}, {"slot": "2a Lunge", "ex": "Split squat, rear foot elevated (Level 3)", "reps": "3–4 × 10", "notes": "Each side"}, {"slot": "2b Push", "ex": "Dumbbell shoulder press (Level 5)", "reps": "3–4 × 10", "notes": "Rest 60 s"}, {"sec": "Metabolic (no rest between the 4 exercises)"}, {"slot": "3a Squat", "ex": "Goblet squat, light", "reps": "1–2 × 15–20 s", "notes": "Time, not reps"}, {"slot": "3b Pull", "ex": "Kneeling lat pulldown", "reps": "1–2 × 15–20 s", "notes": "Rest ~90 s after 3d"}, {"slot": "3c Locomotion", "ex": "Bear crawl or waiter's walk", "reps": "1–2 × 15–20 s", "notes": "Bear crawl is advanced"}, {"slot": "3d Push", "ex": "Push-up", "reps": "1–2 × 15–20 s", "notes": ""}]}], "menu": {"Squat": "Body-weight (1), Goblet (2), Kettlebell rack (2.5), Front (3), Offset overhead (3.5), Back (4), Overhead (5)", "Hinge": "Swiss-ball supine hip extension (1), Romanian deadlift (2), Cable pull-through / KB sumo deadlift (2 alt.), Rack deadlift (3), Deadlift (4), Wide-grip deadlift (5)", "Push": "Push-up (1), Standing single-arm cable chest press (2), Push-up hands suspended (2.5), T push-up (3), Dumbbell bench press (4), Single-arm bench (4.1), Dumbbell shoulder press (5)", "Pull": "Standing cable row (1), Kneeling lat pulldown (2), Dumbbell two-point / three-point / chest-supported row (3), Inverted row (4), Suspended row (4.5), Chin-up (5)", "Lunge": "Split squat (1), Reverse lunge (2), Side lunge (2.5), Rear-foot-elevated split squat (3), Forward lunge (4), Walking lunge (5)", "Single-leg stance": "Step-up (1), Offset-loaded step-up (2), Crossover step-up (2.25), Overhead step-up (2.75), Single-leg Romanian deadlift (3), Single-leg squat (4), Single-leg deadlift (5)", "Core: stability": "Plank, side plank, tall kneeling static hold (1), reduced base of support (2), feet-elevated plank (3), push-up hold (4), unstable contact (5)", "Core: dynamic": "Plank and pulldown (1), Push-away (2), Swiss-ball rollout / mountain climber (3), Suspended fallout / tall kneeling chop (4)", "Combination": "Reverse lunge and shoulder press (1), Romanian deadlift and row (2), Squat and press (3), Push-up and one-arm row (4), Offset squat and one-arm press (5)", "Power": "Box jump (1), Jump squat (2), Kettlebell swing / explosive push-up (3), Jump shrug (4), Dumbbell single-arm snatch (5)", "Loaded carries": "Farmer's walk, waiter's walk, bear-hug walk, sled push or drag", "Locomotion": "Alligator drag, bear crawl, walking lunge, carioca, high knees"}, "ramp": ["Half-kneeling hip-flexor stretch: 30 s each side", "Half-kneeling thoracic rotation: 5–8 each side", "Hip raise: 10", "Spiderman climb: 5 each side", "Spiderman climb with reach: 5 each side", "Squat to stand: 5–8", "Reverse lunge with reach: 5 each side", "Side lunge with touch: 5 each side", "Cossack lunge: 5 each side", "Jog, side shuffle, high-knee run, carioca: 10–20 yards each"], "recovery": "Foam roller 10–20 s per muscle: glute, calf, hamstring, quad, IT band, adductor. Stretches 30 s each."};
+var KEY='lp-tracker-v1';
+var S={u:0,sel:{p:0,w:'A',s:1},log:{},names:{}};
+try{var raw=localStorage.getItem(KEY);if(raw){var r0=JSON.parse(raw);if(r0&&r0.log)S=r0}}catch(e){}
+var CATS={core:['Core','--c-core'],power:['Power','--c-power'],comb:['Combination','--c-power'],squat:['Squat','--c-squat'],hinge:['Hinge','--c-hinge'],push:['Push','--c-push'],pull:['Pull','--c-pull'],lunge:['Lunge','--c-lunge'],single:['Single-leg stance','--c-single'],cond:['Conditioning','--c-cond'],misc:['','--c-misc']};
+function cat(slot){var s=slot.toLowerCase();
+ if(s.indexOf('locomotion')>-1||s.indexOf('interval')>-1)return'cond';
+ if(s.indexOf('stability')>-1&&s.indexOf('single')<0)return'core';
+ if(s.indexOf('power')>-1)return'power';if(s.indexOf('combination')>-1)return'comb';
+ if(s.indexOf('squat')>-1)return'squat';if(s.indexOf('hinge')>-1)return'hinge';
+ if(s.indexOf('push')>-1)return'push';if(s.indexOf('pull')>-1)return'pull';
+ if(s.indexOf('lunge')>-1)return'lunge';if(s.indexOf('single')>-1)return'single';return'misc'}
+function menuFor(slot,c){var m=D.menu;
+ if(c==='core')return slot.toLowerCase().indexOf('dynamic')>-1?m['Core: dynamic']:m['Core: stability'];
+ if(c==='power')return m['Power'];if(c==='comb')return m['Combination'];
+ if(c==='squat')return m['Squat'];if(c==='hinge')return m['Hinge'];if(c==='push')return m['Push'];
+ if(c==='pull')return m['Pull'];if(c==='lunge')return m['Lunge'];if(c==='single')return m['Single-leg stance'];
+ return m['Loaded carries']+' | '+m['Locomotion']}
+function esc(t){return String(t==null?'':t).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function items(p,w){var out=[{id:'r',kind:'ramp'}],i=0;
+ D.programs[p][w].forEach(function(r){if(r.sec)out.push({kind:'sec',t:r.sec});else{out.push({id:String(i),kind:'ex',r:r,i:i});i++}});
+ out.push({id:'c',kind:'rec'});return out}
+function k(p,w,s,id){return p+'.'+w+'.'+s+'.'+id}
+function entry(p,w,s,id){return S.log[k(p,w,s,id)]||{}}
+function sessDone(p,w,s){return items(p,w).every(function(it){return it.kind==='sec'||entry(p,w,s,it.id).d})}
+function totals(){var n=0,pp=[];D.programs.forEach(function(_,p){var c=0;['A','B'].forEach(function(w){for(var s=1;s<=6;s++)if(sessDone(p,w,s))c++});pp.push(c);n+=c});return{n:n,pp:pp}}
+function nextUp(){for(var p=0;p<4;p++)for(var s=1;s<=6;s++)for(var wi=0;wi<2;wi++){var w=wi?'B':'A';if(!sessDone(p,w,s))return{p:p,w:w,s:s}}return null}
+/* persistence */
+var ref=null,wt=null,writing=false,pending=false;
+function save(){S.u=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}
+ if(ref){clearTimeout(wt);wt=setTimeout(flush,900)}}
+function flush(){if(writing){pending=true;return}writing=true;
+ ref.set({state:JSON.stringify(S),u:S.u}).catch(function(){}).then(function(){writing=false;if(pending){pending=false;flush()}})}
+(function(){try{if(!(window.claude&&window.claude.use))return;
+ window.claude.use('db').then(function(db){if(!db)return;ref=db.doc('tracker/state');
+  return ref.get().then(function(snap){
+   if(snap.exists){var d=snap.data();if(d&&d.state){var r=JSON.parse(d.state);if(r&&r.u>S.u){S=r;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}render()}else if(r&&r.u<S.u){flush()}}}
+   else if(S.u>0){flush()}})}).catch(function(){})}catch(e){}})();
+/* render */
+var root=document.getElementById('app');
+function render(){
+ var sel=S.sel,p=sel.p,w=sel.w,s=sel.s,T=totals(),nx=nextUp(),prog=D.programs[p];
+ var h='<div class="top"><h1>Lifting Plan</h1><div class="total"><b>'+T.n+' / 48</b>workouts done</div></div><div class="bar"><i style="width:'+(T.n/48*100)+'%"></i></div>';
+ if(nx){var isHere=nx.p===p&&nx.w===w&&nx.s===s;
+  h+='<div class="next"><div><small>Next up</small><b>'+esc(D.programs[nx.p].name)+' · Workout '+nx.w+' · #'+nx.s+'</b></div>'+(isHere?'':'<button class="btn" data-go="'+nx.p+'.'+nx.w+'.'+nx.s+'">Go</button>')+'</div>'}
+ else h+='<div class="next"><div><b>All 48 workouts done</b></div></div>';
+ h+='<div class="lbl">Program</div><div class="tabs" role="tablist">';
+ D.programs.forEach(function(pr,i){h+='<button class="tab" role="tab" aria-selected="'+(i===p)+'" data-p="'+i+'"><span class="cond">BT '+['I','II','III','IV'][i]+'</span><small>'+T.pp[i]+' / 12 done</small></button>'});
+ h+='</div><div class="seg"><button aria-pressed="'+(w==='A')+'" data-w="A">Workout A</button><button aria-pressed="'+(w==='B')+'" data-w="B">Workout B</button></div>';
+ h+='<div class="lbl">Session (each workout 6 times)</div><div class="sess">';
+ for(var i=1;i<=6;i++)h+='<button aria-pressed="'+(i===s)+'" class="'+(sessDone(p,w,i)?'done':'')+'" data-s="'+i+'">'+i+'</button>';
+ h+='</div><p class="info"><b>'+esc(prog.name)+'.</b> '+esc(prog.sub)+'</p>';
+ items(p,w).forEach(function(it){
+  if(it.kind==='sec'){h+='<div class="sec">'+esc(it.t)+'</div>';return}
+  var e=entry(p,w,s,it.id),done=!!e.d;
+  if(it.kind==='ramp'){h+='<div class="card done-'+done+(done?' done':'')+'"><div class="row"><button class="chk" role="checkbox" aria-checked="'+done+'" aria-label="RAMP done" data-c="r"></button><div><div class="tag">Warm-up</div><div class="nm">RAMP (about 10 min)</div><details><summary>Show the 10 moves</summary><ol class="ramp">'+D.ramp.map(function(x){return'<li>'+esc(x)+'</li>'}).join('')+'</ol></details></div></div></div>';return}
+  if(it.kind==='rec'){h+='<div class="card'+(done?' done':'')+'"><div class="row"><button class="chk" role="checkbox" aria-checked="'+done+'" aria-label="Recovery done" data-c="c"></button><div><div class="tag">Recovery</div><div class="nm">Foam roll and stretch</div><div class="det">'+esc(D.recovery)+'</div></div></div></div>';return}
+  var r=it.r,c=cat(r.slot),nm=S.names[p+'.'+w+'.'+it.i]||r.ex;
+  var last='';for(var q=s-1;q>=1;q--){var le=entry(p,w,q,it.id);if(le.kg||le.r){last='Last time: '+(le.kg?le.kg+' kg':'')+(le.kg&&le.r?' × ':'')+(le.r?le.r+' reps':'');break}}
+  h+='<div class="card'+(done?' done':'')+'" style="--cc:var('+CATS[c][1]+')"><div class="row"><button class="chk" role="checkbox" aria-checked="'+done+'" aria-label="Done" data-c="'+it.id+'"></button><div style="flex:1;min-width:0"><div class="tag">'+esc(r.slot)+'</div><div class="nm">'+esc(nm)+'</div><div class="det">'+esc(r.reps)+(r.notes?' · '+esc(r.notes):'')+'</div>'
+  +'<div class="log"><label>kg <input inputmode="decimal" data-f="kg" data-id="'+it.id+'" value="'+esc(e.kg||'')+'" aria-label="Weight in kg"></label><label>reps <input inputmode="numeric" data-f="r" data-id="'+it.id+'" value="'+esc(e.r||'')+'" aria-label="Reps"></label>'+(last?'<span class="last">'+esc(last)+'</span>':'')+'</div>'
+  +'<details><summary>Swap exercise</summary><p>'+esc(menuFor(r.slot,c))+'</p><input class="nmin" data-nm="'+it.i+'" placeholder="Type your exercise name" value="'+esc(S.names[p+'.'+w+'.'+it.i]||'')+'" aria-label="Custom exercise name"></details></div></div></div>'});
+ h+='<div class="foot"><button class="btn line" data-reset="1">Clear this session</button><button class="btn line" data-export="1">Export backup</button><label class="btn line" style="display:inline-block">Import backup<input type="file" id="imp" accept="application/json,.json" hidden></label><small>Progress is saved on this device automatically. Export a backup now and then.</small></div>';
+ root.innerHTML=h}
+root.addEventListener('click',function(ev){var t=ev.target.closest('button');if(!t)return;var sel=S.sel;
+ if(t.dataset.p!==undefined){S.sel={p:+t.dataset.p,w:sel.w,s:sel.s}}
+ else if(t.dataset.w){S.sel={p:sel.p,w:t.dataset.w,s:sel.s}}
+ else if(t.dataset.s){S.sel={p:sel.p,w:sel.w,s:+t.dataset.s}}
+ else if(t.dataset.go){var g=t.dataset.go.split('.');S.sel={p:+g[0],w:g[1],s:+g[2]}}
+ else if(t.dataset.c!==undefined){var key=k(sel.p,sel.w,sel.s,t.dataset.c);var e=S.log[key]||{};e.d=!e.d;S.log[key]=e;
+  if(e.d)startTimerForCard(t)}
+ else if(t.dataset.export){var bl=new Blob([JSON.stringify(S)],{type:'application/json'});var a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download='lifting-backup.json';document.body.appendChild(a);a.click();a.remove();return}
+ else if(t.dataset.reset){var pre=sel.p+'.'+sel.w+'.'+sel.s+'.';Object.keys(S.log).forEach(function(x){if(x.indexOf(pre)===0)delete S.log[x]})}
+ else return;
+ var y=window.scrollY;save();render();window.scrollTo(0,y)});
+root.addEventListener('input',function(ev){var t=ev.target;var sel=S.sel;
+ if(t.dataset.f){var key=k(sel.p,sel.w,sel.s,t.dataset.id);var e=S.log[key]||{};e[t.dataset.f]=t.value;S.log[key]=e;save()}
+ else if(t.dataset.nm!==undefined){var nk=sel.p+'.'+sel.w+'.'+t.dataset.nm;if(t.value.trim())S.names[nk]=t.value;else delete S.names[nk];save()}});
+root.addEventListener('change',function(ev){var t=ev.target;if(t.id!=='imp'||!t.files[0])return;var fr=new FileReader();fr.onload=function(){try{var r=JSON.parse(fr.result);if(r&&r.log){S=r;save();render()}}catch(e){}};fr.readAsText(t.files[0])});
+/* rest timer */
+var tm=null,left=0,tEl=document.getElementById('tt');
+function fmt(n){return Math.floor(n/60)+':'+('0'+n%60).slice(-2)}
+function startTimer(sec){clearInterval(tm);left=sec;tEl.className='t';tEl.textContent=fmt(left);
+ tm=setInterval(function(){left--;if(left<=0){clearInterval(tm);tm=null;tEl.textContent='Go';tEl.className='t end';try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){}return}tEl.textContent=fmt(left)},1000)}
+function startTimerForCard(){}
+document.getElementById('timer').addEventListener('click',function(ev){var b=ev.target.closest('button');if(!b)return;
+ if(b.dataset.sec)startTimer(+b.dataset.sec);else if(b.dataset.stop){clearInterval(tm);tm=null;tEl.textContent='0:00';tEl.className='t'}});
+try{if(navigator.wakeLock)navigator.wakeLock.request('screen').catch(function(){})}catch(e){}
+render();
+</script></body></html>
